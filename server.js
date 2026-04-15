@@ -185,20 +185,23 @@ const pool = mysql.createPool({
 
 // ============================================
 // Apply auth to all /api/ routes EXCEPT token generation
+// SEGURIDAD DESACTIVADA TEMPORALMENTE - descomentar para reactivar
 // ============================================
-app.use('/api/produccion-general', authMiddleware);
-app.use('/api/ganancia-producto', authMiddleware);
-app.use('/api/detalle-mensual', authMiddleware);
-app.use('/api/top-clientes', authMiddleware);
-app.use('/api/porcentaje-clientes', authMiddleware);
-app.use('/api/filtros', authMiddleware);
-app.use('/api/comparativo-anual', authMiddleware);
-app.use('/api/columns', authMiddleware);
+// app.use('/api/produccion-general', authMiddleware);
+// app.use('/api/ganancia-producto', authMiddleware);
+// app.use('/api/detalle-mensual', authMiddleware);
+// app.use('/api/top-clientes', authMiddleware);
+// app.use('/api/porcentaje-clientes', authMiddleware);
+// app.use('/api/filtros', authMiddleware);
+// app.use('/api/comparativo-anual', authMiddleware);
+// app.use('/api/columns', authMiddleware);
 
 // Helper: enforce operator filter for non-admin users
 // Uses operadorId (matches DashboardPeOpID) for security
 // and operador name (DashboardPeOperador) for admin dropdown filtering
 function enforceOperadorId(req) {
+  // Si no hay auth (seguridad desactivada), usar query param directamente
+  if (!req.user) return req.query.operadorId || '';
   if (req.user.rol !== 'Administrador' && req.user.operadorId) {
     return req.user.operadorId;
   }
@@ -206,6 +209,7 @@ function enforceOperadorId(req) {
 }
 
 function enforceOperadorNombre(req) {
+  if (!req.user) return req.query.operador || '';
   if (req.user.rol !== 'Administrador' && req.user.operador) {
     return req.user.operador;
   }

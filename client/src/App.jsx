@@ -10,17 +10,19 @@ import Logo from './components/Logo';
 const API_BASE = window.location.origin;
 
 // ============================================
-// Extract token from URL and decode user info
+// SEGURIDAD DESACTIVADA TEMPORALMENTE
+// Cuando se reactive, descomentar getAuthInfo original y authFetch con Bearer
 // ============================================
 function getAuthInfo() {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token') || '';
 
   if (!token) {
-    return { token: '', rol: '', operador: '', authenticated: false };
+    // Sin seguridad: acceso como Admin sin token
+    return { token: '', rol: 'Administrador', operador: '', authenticated: true };
   }
 
-  // Decode JWT payload (without verifying - server does that)
+  // Si hay token, decodificarlo normalmente
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
     return {
@@ -31,12 +33,13 @@ function getAuthInfo() {
       authenticated: true
     };
   } catch (e) {
-    return { token, rol: '', operador: '', authenticated: false };
+    return { token: '', rol: 'Administrador', operador: '', authenticated: true };
   }
 }
 
-// Helper to add token to fetch requests
+// Helper to fetch - sin seguridad no envia Bearer
 function authFetch(url, token) {
+  if (!token) return fetch(url);
   return fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -74,36 +77,8 @@ function App() {
   const [error, setError] = useState(null);
   const [authError, setAuthError] = useState(false);
 
-  // ============================================
-  // If no token, show access denied screen
-  // ============================================
-  if (!auth.token) {
-    return (
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', flexDirection: 'column', fontFamily: 'Inter, sans-serif',
-        background: '#f5f7fa'
-      }}>
-        <div style={{
-          background: 'white', padding: '48px', borderRadius: '16px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.1)', textAlign: 'center', maxWidth: 420
-        }}>
-          <Logo />
-          <div style={{ marginTop: 24 }}>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="1.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0110 0v4"/>
-            </svg>
-          </div>
-          <h2 style={{ color: '#1a1a2e', marginTop: 16, fontSize: 20 }}>Acceso Restringido</h2>
-          <p style={{ color: '#6b7280', marginTop: 8, fontSize: 14, lineHeight: 1.6 }}>
-            Este dashboard requiere autenticaci&oacute;n.<br/>
-            Accede desde la plataforma Zuru para ver el reporte.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // SEGURIDAD DESACTIVADA - pantalla de acceso restringido comentada
+  // Reactivar cuando se habilite JWT nuevamente
 
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
