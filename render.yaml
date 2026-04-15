@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: dashboard-estadistica-peru
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DB_HOST
+        value: 34.125.225.64
+      - key: DB_USER
+        value: ddi
+      - key: DB_PASS
+        value: DDI4ever%
+      - key: DB_NAME
+        value: EMI
+      - key: DB_TABLE
+        value: DashboardPe
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
