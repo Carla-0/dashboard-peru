@@ -251,9 +251,9 @@ app.get('/api/produccion-general', async (req, res) => {
     const query = `
       SELECT
         COALESCE(SUM(DashboardPeSumaAsegurada), 0) as suma_asegurada,
-        COALESCE(SUM(DashboardPeCosto), 0) as costo,
-        COALESCE(SUM(DashboardPeVenta), 0) as venta,
-        COALESCE(SUM(DashboardPeGanancia), 0) as ganancia,
+        COALESCE(SUM(DashboardPePrimaOperador), 0) as costo,
+        COALESCE(SUM(DashboardPePrimaAsegurado), 0) as venta,
+        COALESCE(SUM(DashboardPeGananciaOperador), 0) as ganancia,
         COUNT(*) as cantidad
       FROM ${process.env.DB_TABLE}
       ${whereClause}
@@ -289,7 +289,7 @@ app.get('/api/ganancia-producto', async (req, res) => {
     const query = `
       SELECT
         DashboardPeProducto as producto,
-        COALESCE(SUM(DashboardPeGanancia), 0) as ganancia
+        COALESCE(SUM(DashboardPeGananciaOperador), 0) as ganancia
       FROM ${process.env.DB_TABLE}
       ${whereClause}
       GROUP BY DashboardPeProducto
@@ -327,9 +327,9 @@ app.get('/api/detalle-mensual', async (req, res) => {
       SELECT
         DATE_FORMAT(DashboardPeFechaEmision, '%Y-%m') as mes,
         DATE_FORMAT(DashboardPeFechaEmision, '%b %Y') as mes_label,
-        COALESCE(SUM(DashboardPeCosto), 0) as costo,
-        COALESCE(SUM(DashboardPeVenta), 0) as venta,
-        COALESCE(SUM(DashboardPeGanancia), 0) as ganancia,
+        COALESCE(SUM(DashboardPePrimaOperador), 0) as costo,
+        COALESCE(SUM(DashboardPePrimaAsegurado), 0) as venta,
+        COALESCE(SUM(DashboardPeGananciaOperador), 0) as ganancia,
         COUNT(*) as cantidad
       FROM ${process.env.DB_TABLE}
       ${whereClause}
@@ -366,12 +366,12 @@ app.get('/api/top-clientes', async (req, res) => {
 
     const query = `
       SELECT
-        DashboardPeBeneficiario as beneficiario,
-        COALESCE(SUM(DashboardPeGanancia), 0) as ganancia,
+        DashboardPeAsegurado as beneficiario,
+        COALESCE(SUM(DashboardPeGananciaOperador), 0) as ganancia,
         COUNT(*) as cantidad
       FROM ${process.env.DB_TABLE}
       ${whereClause}
-      GROUP BY DashboardPeBeneficiario
+      GROUP BY DashboardPeAsegurado
       ORDER BY ganancia DESC
       LIMIT 10
     `;
@@ -405,11 +405,11 @@ app.get('/api/porcentaje-clientes', async (req, res) => {
 
     const query = `
       SELECT
-        DashboardPeBeneficiario as beneficiario,
+        DashboardPeAsegurado as beneficiario,
         COALESCE(SUM(DashboardPeSumaAsegurada), 0) as suma_asegurada
       FROM ${process.env.DB_TABLE}
       ${whereClause}
-      GROUP BY DashboardPeBeneficiario
+      GROUP BY DashboardPeAsegurado
       ORDER BY suma_asegurada DESC
       LIMIT 10
     `;
@@ -468,9 +468,9 @@ app.get('/api/comparativo-anual', async (req, res) => {
       SELECT
         MONTH(DashboardPeFechaEmision) as mes_num,
         YEAR(DashboardPeFechaEmision) as anio,
-        COALESCE(SUM(DashboardPeCosto), 0) as costo,
-        COALESCE(SUM(DashboardPeVenta), 0) as venta,
-        COALESCE(SUM(DashboardPeGanancia), 0) as ganancia
+        COALESCE(SUM(DashboardPePrimaOperador), 0) as costo,
+        COALESCE(SUM(DashboardPePrimaAsegurado), 0) as venta,
+        COALESCE(SUM(DashboardPeGananciaOperador), 0) as ganancia
       FROM ${process.env.DB_TABLE}
       WHERE YEAR(DashboardPeFechaEmision) IN (?, ?)
       ${whereClause}
